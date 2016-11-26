@@ -1,0 +1,17 @@
+#include"str_line.h"
+Str_Line::Str_Line()
+{
+	pre_line = NULL;
+	next_line = NULL;
+}
+
+Str_Line::~Str_Line()
+{
+	delete s;
+}
+Str_Line::Str_Line(char*ss)
+{
+	pre_line = NULL;
+	next_line = NULL;
+	strcat(s, ss);
+}
