@@ -9,6 +9,10 @@ Str_Line::~Str_Line()
 {
 	delete s;
 }
+char * Str_Line::to_string()
+{
+	return s;
+}
 Str_Line::Str_Line(char*ss)
 {
 	pre_line = NULL;
