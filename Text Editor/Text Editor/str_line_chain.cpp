@@ -2,14 +2,13 @@
 
 Str_Line_Chain::Str_Line_Chain()
 {
-	fp = NULL;
 	head = NULL;
 	tail = NULL;
 }
 
 Str_Line_Chain::Str_Line_Chain(char * c)
 {
-	fp->open(c, ios::in);
+	ifp.open(c, ios::in | ios::out);
 	head = NULL;
 	tail = NULL;
 }
@@ -19,13 +18,13 @@ Str_Line_Chain::~Str_Line_Chain()
 	clear_chain();
 	delete head;
 	delete tail;
-	fp->close();
 }
 
-void Str_Line_Chain::read_file_to_buffer(ifstream*f)
+void Str_Line_Chain::read_file_to_buffer()
 {
-	char*tmp;
-	f->getline(tmp, 300);
+	ifp.open(file_name, ios::in | ios::out);
+	char*tmp = new char[300];
+	ifp.getline(tmp, 300);
 	head = new Str_Line(tmp);
 	tail = new Str_Line();
 	head->next_line = tail;
@@ -33,9 +32,9 @@ void Str_Line_Chain::read_file_to_buffer(ifstream*f)
 	tail->pre_line = head;
 	tail->line_number = 2;
 
-	while (!f->eof())
+	while (!ifp.eof())
 	{
-		f->getline(tmp, 300);
+		ifp.getline(tmp, 300);
 		Str_Line*tp = new Str_Line(tmp);
 		tp->pre_line = tail->pre_line;
 		tp->next_line = tail;
@@ -43,6 +42,19 @@ void Str_Line_Chain::read_file_to_buffer(ifstream*f)
 		tail->pre_line = tp;
 		tail->line_number++;
 	}
+	ifp.close();
+}
+
+void Str_Line_Chain::write_file()
+{
+	ofp.open(file_name,ios::ate);
+	ofp.clear();
+	Str_Line*tmp = head;
+	while (tmp != NULL)
+	{
+		ofp.write(tmp->to_string(),sizeof(tmp->to_string()));
+	}
+	ofp.close();
 }
 
 Str_Line * Str_Line_Chain::get_head_line()
@@ -106,13 +118,51 @@ Str_Line * Str_Line_Chain::get_pre_line(Str_Line * cur)
 	return cur_line;
 }
 
+void Str_Line_Chain::set_cur(int num)
+{
+	cur_line = get_line(num);
+}
+
+void Str_Line_Chain::set_cur(Str_Line*sc)
+{
+	cur_line = sc;
+}
+
+Str_Line * Str_Line_Chain::del_line(int num)
+{
+	Str_Line*tmp = get_line(num);
+	del_line(tmp);
+	return get_line(num);
+}
+
 Str_Line * Str_Line_Chain::del_line(Str_Line * line)
 {
+	Str_Line*tmp = line->next_line;
+	while (tmp != NULL)
+	{
+		tmp->line_number--;
+		tmp = tmp->next_line;
+	}
 	line->pre_line->next_line = line->next_line;
 	line->next_line->pre_line = line->pre_line;
-	Str_Line*tmp = line->next_line;
+	tmp = line->next_line;
 	delete line;
 	return tmp;
+}
+
+void Str_Line_Chain::insert_line(Str_Line * in_line, Str_Line*target)
+{
+	in_line->line_number = target->line_number;
+	Str_Line*tmp = target;
+	while (tmp != NULL)
+	{
+		tmp->line_number++;
+		tmp = tmp->next_line;
+	}
+	target->next_line->pre_line = in_line;
+	in_line->next_line = target;
+	target->next_line = in_line;
+	in_line->pre_line = target;
 }
 
 void Str_Line_Chain::clear_chain()

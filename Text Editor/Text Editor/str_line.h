@@ -3,7 +3,7 @@
 #define _STR_LINE_H_
 #include<iostream>
 #include<string.h>
-#include"str_line_chain.h"
+
 using namespace std;
 class Str_Line
 {
@@ -19,7 +19,6 @@ private:
 	Str_Line*pre_line;
 	Str_Line*next_line;
 };
-
 
 #endif // !_STR_LINE_H_
 

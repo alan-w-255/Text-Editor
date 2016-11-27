@@ -1,4 +1,4 @@
-#include "editor.h"
+ï»¿#include "editor.h"
 Editor::Editor()
 {
 	slc = NULL;
@@ -11,24 +11,39 @@ Editor::~Editor()
 {
 	delete slc;
 }
-void Editor::change_line(char*src_line, int target_line_number)
+void Editor::change_line()
 {
+	cout << "è¾“å…¥æ”¹å˜çš„å†…å®¹" << endl;
+	char*src_line = new char[300];
+	cin.getline(src_line, 300);
+	Str_Line*sl = new Str_Line(src_line);
+	slc->insert_line(sl, cur_line);
+	slc->del_line(cur_line);
+}
 
+void Editor::save_file()
+{
 }
 
 void Editor::go_begin()
 {
 	cur_line = slc->get_head_line();
+	cout << cur_line->to_string();
 }
 
 void Editor::go_end(FILE * f)
 {
-	cur_line = slc->get_tail_line;
+	cur_line = slc->get_tail_line();
+	cout << cur_line->to_string();
 }
 
-void Editor::go_line(int num)
+void Editor::go_line()
 {
+	int num;
+	cout << "è¾“å…¥ä½ è¦æ˜¾ç¤ºçš„è¡Œå·" << endl;
+	cin >> num;
 	cur_line = slc->get_line(num);
+	cout << cur_line->to_string();
 }
 
 void Editor::view_file()
@@ -46,45 +61,52 @@ void Editor::show_help()
 	cout << "help" << endl;
 }
 
+void Editor::show_cur_line()
+{
+	cout << cur_line->to_string() << endl;
+}
+
 void Editor::quit_editor()
 {
 	delete slc;
-	//¹Ø±ÕÎÄ¼þ
-	//ÊÍ·ÅÄÚ´æ
+	//å…³é—­æ–‡ä»¶
+	//é‡Šæ”¾å†…å­˜
 }
 
 void Editor::run()
 {
 	char opt;
-	cout << "ÇëÊäÈëÖ¸Áî" << endl;
-	show_help();
+	cout << "è¯·è¾“å…¥æŒ‡ä»¤" << endl;
 	cin >> opt;
 	opt=toupper(opt);
+	cur_line = slc->get_cur_line();
 	switch (opt)
 	{
-	case 'R':go_begin(); break;
-	case 'I':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'D':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'F':insert_line(cur_line);
-		cout << "ÇëÊäÈëÖ¸Áî" << endl; break;
-	case 'C':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'Q':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
+	case 'R':go_begin(); break;//æ‰“å¼€æ–‡ä»¶ï¼Œæ˜¾ç¤ºç¬¬ä¸€è¡Œ
+	case 'I':insert_line();//æ’å…¥ä¸€è¡Œ
+		; break;
+	case 'D':del_line();//åˆ é™¤ä¸€è¡Œï¼›
+		 break;
+	case 'F':insert_line();
+		 break;
+	case 'C':change_line();
+		 break;
+	case 'Q':insert_line();
+		 break;
 	case 'H':show_help();
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'N':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'P':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'B':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'E':insert_line(cur_line);
-		cout<<"ÇëÊäÈëÖ¸Áî"<<endl; break;
-	case 'G':insert_line(cur_line);
-		cout << "ÇëÊäÈëÖ¸Áî" << endl; break;
+		 break;
+	case '?':show_help();
+		break;
+	case 'N':read_next_line();
+		 break;
+	case 'P':read_pre_line();
+		 break;
+	case 'B':read_pre_line();
+		 break;
+	case 'E':insert_line();
+		 break;
+	case 'G':go_line();
+		 break;
 	case 'V':view_file(); break;
 	default:
 		break;
@@ -95,13 +117,38 @@ void Editor::read_next_line()
 {
 	cur_line = slc->get_cur_line();
 	cur_line = slc->get_next_line(cur_line);
-	cout << cur_line->to_string;
+	cout << cur_line->to_string();
 }
 
 void Editor::read_pre_line()
 {
 	cur_line = slc->get_cur_line();
 	cur_line = slc->get_pre_line(cur_line);
-	cout << cur_line->to_string;
+	cout << cur_line->to_string();
 }
+
+void Editor::insert_line()
+{
+	int num_line = 0;
+	cur_line = slc->get_cur_line();
+	cout << "è¾“å…¥ä½ è¦æ’å…¥çš„è¡Œå·" << endl;
+	cin >> num_line;
+	cout << "è¯·è¾“å…¥ä½ è¦æ’å…¥çš„å†…å®¹" << endl;
+	char*ch = new char[300];
+	cin.getline(ch, 300);
+	Str_Line*ins_line = new Str_Line(ch);
+	Str_Line*tmp = slc->get_line(num_line-1);
+	slc->insert_line(ins_line, tmp);
+	cur_line = ins_line;
+
+}
+
+void Editor::del_line()
+{
+	cout << "è¾“å…¥ä½ è¦åˆ é™¤çš„è¡Œå·" << endl;
+	int num;
+	cin >> num;
+	slc->del_line(num);
+}
+
 
