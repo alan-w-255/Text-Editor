@@ -8,9 +8,10 @@ Str_Line_Chain::Str_Line_Chain()
 
 Str_Line_Chain::Str_Line_Chain(char * c)
 {
-	ifp.open(c, ios::in | ios::out);
 	head = NULL;
 	tail = NULL;
+	file_name = c;
+	read_file_to_buffer();
 }
 
 Str_Line_Chain::~Str_Line_Chain()
@@ -23,6 +24,7 @@ Str_Line_Chain::~Str_Line_Chain()
 void Str_Line_Chain::read_file_to_buffer()
 {
 	ifp.open(file_name, ios::in | ios::out);
+	bool x = ifp.is_open();
 	char*tmp = new char[300];
 	ifp.getline(tmp, 300);
 	head = new Str_Line(tmp);
@@ -34,15 +36,16 @@ void Str_Line_Chain::read_file_to_buffer()
 
 	while (!ifp.eof())
 	{
-		ifp.getline(tmp, 300);
-		Str_Line*tp = new Str_Line(tmp);
+		char*ch=new char[300];
+		ifp.getline(ch, 300);
+		Str_Line*tp = new Str_Line(ch);
 		tp->pre_line = tail->pre_line;
 		tp->next_line = tail;
+		tail->pre_line->next_line = tp;
 		tp->line_number = tail->line_number;
 		tail->pre_line = tp;
 		tail->line_number++;
 	}
-	ifp.close();
 }
 
 void Str_Line_Chain::write_file()

@@ -18,7 +18,6 @@ public:
 	Str_Line*get_head_line();
 	Str_Line*get_tail_line();
 	Str_Line*get_line(int num);
-	Str_Line*get_cur_line();
 	Str_Line*get_next_line(Str_Line*cur);
 	Str_Line*get_pre_line(Str_Line*cur);
 	Str_Line*del_line(int num);

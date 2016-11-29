@@ -15,7 +15,7 @@ public:
 	friend class Str_Line_Chain;
 private:
 	int line_number;
-	char*s = new char[300];
+	char*s ;
 	Str_Line*pre_line;
 	Str_Line*next_line;
 };

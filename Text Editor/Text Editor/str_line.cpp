@@ -17,5 +17,5 @@ Str_Line::Str_Line(char*ss)
 {
 	pre_line = NULL;
 	next_line = NULL;
-	strcat_s(s, 300, ss);
+	s = ss;
 }
