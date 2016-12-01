@@ -18,7 +18,7 @@ public:
 	void change_line();//改变当前行的内容
 	void save_file();
 	void go_begin();
-	void go_end(FILE*f);
+	void go_end();
 	void go_line();
 	void view_file();
 	void show_help();
@@ -30,10 +30,12 @@ public:
 	void insert_line();
 	void del_line();
 private:
+	char*in_file_name = new char[300];
+	char*out_file_name = new char[300];
 	bool is_valid_opt(char ch);
 	Str_Line_Chain*slc;//creat a Str_Line_Chain object.
 	Str_Line*cur_line;
-	char opts[14] = { 'R','I','D','F','C','Q','H','?','N','P','B','E','G','V' };
+	char opts[15] = { 'R','I','D','F','C','Q','H','?','N','P','B','E','G','V','W'};
 };
 
 

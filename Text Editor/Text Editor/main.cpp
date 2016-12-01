@@ -5,8 +5,7 @@ using namespace std;
 
 int main()
 {
-	char*file_name = "I:\\DSexercise\\Text-Editor\\when.txt";
-	Editor*E = new Editor(file_name);
+	Editor*E = new Editor();
 	E->run();
 	return 0;
 }

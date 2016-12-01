@@ -23,12 +23,13 @@ public:
 	Str_Line*del_line(Str_Line*line);//删除line指向的一行，返回下一行指针；
 	void insert_line(Str_Line*in_line,Str_Line*target);//在target前面插入新行 in_line;
 	void clear_chain();
+	bool is_modified();
 private:
 	ifstream ifp;//文件输入流。
-	ofstream ofp;//输出文件流。
 	char*file_name;
 	Str_Line*head;
 	Str_Line*tail;
+	bool is_changed;
 
 };
 

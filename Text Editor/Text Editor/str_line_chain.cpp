@@ -24,28 +24,55 @@ Str_Line_Chain::~Str_Line_Chain()
 
 void Str_Line_Chain::read_file_to_buffer()
 {
-	ifp.open(file_name, ios::in | ios::out);
+	is_changed = false;
+	ifp.open(file_name, ios::in);
 	bool x = ifp.is_open();
-	char*tmp = new char[300];
-	ifp.getline(tmp, 300);
-	head = new Str_Line(tmp);
-	tail = new Str_Line();
-	head->next_line = tail;
-	head->line_number = 1;
-	tail->pre_line = head;
-	tail->line_number = 2;
-
-	while (!ifp.eof())
+	//创建新文件
+	if (x == false)
 	{
-		char*ch=new char[300];
-		ifp.getline(ch, 300);
-		Str_Line*tp = new Str_Line(ch);
-		tp->pre_line = tail->pre_line;
-		tp->next_line = tail;
-		tail->pre_line->next_line = tp;
-		tp->line_number = tail->line_number;
-		tail->pre_line = tp;
-		tail->line_number++;
+		ofstream ofp(file_name, ios::out);
+		if (ofp.is_open())
+		{
+			is_changed = true;
+			cout << "新文件" << endl;
+			ofp.close();
+			ifp.open(file_name, ios::in);
+			head = new Str_Line();
+			head->line_number = 1;
+			tail = new Str_Line();
+			tail->line_number = 2;
+			head->next_line = tail;
+			tail->pre_line = head;
+		}
+		else
+		{
+			cout << "创建新文件失败" << endl;
+		}
+	}
+	// 文件已经存在；
+	else
+	{
+		char*tmp = new char[300];
+		ifp.getline(tmp, 300);
+		head = new Str_Line(tmp);
+		tail = new Str_Line();
+		head->next_line = tail;
+		head->line_number = 1;
+		tail->pre_line = head;
+		tail->line_number = 2;
+
+		while (!ifp.eof())
+		{
+			char*ch = new char[300];
+			ifp.getline(ch, 300);
+			Str_Line*tp = new Str_Line(ch);
+			tp->pre_line = tail->pre_line;
+			tp->next_line = tail;
+			tail->pre_line->next_line = tp;
+			tp->line_number = tail->line_number;
+			tail->pre_line = tp;
+			tail->line_number++;
+		}
 	}
 }
 
@@ -93,55 +120,108 @@ Str_Line * Str_Line_Chain::get_pre_line(Str_Line * cur)
 
 Str_Line * Str_Line_Chain::del_line(int num)
 {
+	is_changed = true;
 	if (num >= tail->line_number)//如果输入行号大于尾节点得行号，删除尾节点前一行，返回尾节点前一行。因为尾节点为空节点。
 	{
-		del_line(tail->pre_line);
+
+		tail->line_number = tail->pre_line->line_number;
+		Str_Line*tmp = tail->pre_line;
+		tail->pre_line = tmp->pre_line;
+		tmp->pre_line->next_line = tail;
+		delete tmp;
 		return tail->pre_line;
 	}
-	else if (num <= 0)
+	else if (num <= 1)//如果输入行号小于头节点行号，删除头节点，返回新得头节点。
 	{
 		head = head->next_line;
-		del_line(head->pre_line);
+		delete head->pre_line;
+		head->pre_line = NULL;
+		Str_Line*tmp = head;
+		while (tmp != NULL)
+		{
+			tmp->line_number--;
+			tmp = tmp->next_line;
+		}
+
 		return head;
 	}
 	else
 	{
 		Str_Line*tmp = get_line(num);
-		del_line(tmp);
+		tmp->next_line->pre_line = tmp->pre_line;
+		tmp->pre_line->next_line = tmp->next_line;
+		while (tmp != NULL)
+		{
+			tmp->line_number--;
+			tmp = tmp->next_line;
+		}
+		delete tmp;
 		return get_line(num);
 	}
 }
 
-Str_Line * Str_Line_Chain::del_line(Str_Line * line)
+Str_Line * Str_Line_Chain::del_line(Str_Line*dline)
 {
-	Str_Line*tmp = line->next_line;
-	while (tmp != NULL)
+	is_changed = true;
+	if (dline == tail)//如果输入行号大于尾节点得行号，删除尾节点前一行，返回尾节点前一行。因为尾节点为空节点。
 	{
-		tmp->line_number--;
-		tmp = tmp->next_line;
+
+		tail->line_number = tail->pre_line->line_number;
+		Str_Line*tmp = tail->pre_line;
+		tail->pre_line = tmp->pre_line;
+		tmp->pre_line->next_line = tail;
+		delete tmp;
+		return tail->pre_line;
 	}
-	line->pre_line->next_line = line->next_line;
-	line->next_line->pre_line = line->pre_line;
-	tmp = line->next_line;
-	delete line;
-	return tmp;
+	else if (dline == head)//如果输入行号小于头节点行号，删除头节点，返回新得头节点。
+	{
+		head = head->next_line;
+		delete head->pre_line;
+		head->pre_line = NULL;
+		Str_Line*tmp = head;
+		while (tmp != NULL)
+		{
+			tmp->line_number--;
+			tmp = tmp->next_line;
+		}
+		return head;
+	}
+	else
+	{
+		Str_Line*tmp = dline;
+		while (tmp != NULL)
+		{
+			tmp->line_number--;
+			tmp = tmp->next_line;
+		}
+		tmp = dline;
+		tmp->next_line->pre_line = tmp->pre_line;
+		tmp->pre_line->next_line = tmp->next_line;
+		dline = dline->pre_line;
+		delete tmp;
+		return dline;
+	}
 }
 
 void Str_Line_Chain::insert_line(Str_Line * in_line, Str_Line*target)
 {
+	is_changed = true;
 	in_line->line_number = target->line_number;
 	Str_Line*tmp = target;
+	//target节点后依次加一；
 	while (tmp != NULL)
 	{
 		tmp->line_number++;
 		tmp = tmp->next_line;
 	}
+	//如果插入的是头节点,插在头节点前,成为新的头节点；
 	if (in_line->get_line_number() == 1)
 	{
 		in_line->next_line = target;
 		target->pre_line = in_line;
 		head = in_line;
 	}
+	//如果不是头节点，插在target节点之前
 	else
 	{
 		target->pre_line->next_line = in_line;
@@ -153,8 +233,17 @@ void Str_Line_Chain::insert_line(Str_Line * in_line, Str_Line*target)
 
 void Str_Line_Chain::clear_chain()
 {
+	is_changed = true;
 	while (head->next_line != tail)
 	{
 		del_line(head->next_line);
 	}
+	delete head;
+	delete tail;
+
+}
+
+bool Str_Line_Chain::is_modified()
+{
+	return is_changed;
 }

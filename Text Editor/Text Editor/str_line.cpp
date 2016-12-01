@@ -13,6 +13,10 @@ char * Str_Line::to_string()
 {
 	return s;
 }
+void Str_Line::set_string(char*ch)
+{
+	s = ch;
+}
 int Str_Line::get_line_number()
 {
 	return line_number;
