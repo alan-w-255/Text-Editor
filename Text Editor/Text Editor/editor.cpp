@@ -26,6 +26,7 @@ void Editor::change_line()
 void Editor::save_file()
 {
 	cout << "请输入保存得文件名" << endl;
+	cout << "请输入完整路径" << endl;
 	out_file_name = new char[300];
 	cin.get();
 	cin.getline(out_file_name,300);
@@ -41,6 +42,7 @@ void Editor::save_file()
 			tmp = slc->get_next_line(tmp);
 		}
 		outfile.close();
+		cout << "文件保存成功" << endl;
 	}
 	else
 	{
@@ -174,16 +176,17 @@ void Editor::quit_editor()
 
 void Editor::run()
 {
-	char opt = 'R';
+	char opt[20] = { 0 };
 	go_begin();
-	while (opt !='Q')
+	while (opt[0] !='Q')
 	{
 		cout << "请输入指令" << endl;
 		cin >> opt;
-		opt=toupper(opt);
+		cin.clear();
+		opt[0]=toupper(opt[0]);
 		if (is_valid_opt(opt))//判断是否是合法指令
 		{
-			switch (opt)
+			switch (opt[0])
 			{
 				case 'R':go_begin(); break;//打开文件，显示第一行
 				case 'I':insert_line();//插入一行
@@ -209,9 +212,9 @@ void Editor::run()
 				case 'B':go_begin();
 					 break;
 				case 'E':go_end();
-					 break;
+break;
 				case 'G':go_line();
-					 break;
+					break;
 				case 'V':view_file(); break;
 				default:
 					break;
@@ -227,13 +230,13 @@ void Editor::run()
 void Editor::read_next_line()
 {
 	cur_line = slc->get_next_line(cur_line);
-	cout << cur_line->to_string()<<endl;
+	cout << cur_line->to_string() << endl;
 }
 
 void Editor::read_pre_line()
 {
 	cur_line = slc->get_pre_line(cur_line);
-	cout << cur_line->to_string()<<endl;
+	cout << cur_line->to_string() << endl;
 }
 
 void Editor::insert_line()
@@ -255,7 +258,7 @@ void Editor::insert_line()
 	}
 	else if (num_line <= 1)
 	{
-		cout <<"你将在第一行前插入： "<< slc->get_line(1)->to_string() << endl;
+		cout << "你将在第一行前插入： " << slc->get_line(1)->to_string() << endl;
 		cout << "请输入你要插入的内容" << endl;
 		char*ch = new char[300];
 		cin.get();
@@ -269,7 +272,7 @@ void Editor::insert_line()
 	}
 	else
 	{
-		cout <<"你将在此行后插入： "<< slc->get_line(num_line-1)->to_string() << endl;
+		cout << "你将在此行后插入： " << slc->get_line(num_line - 1)->to_string() << endl;
 		cout << "请输入你要插入的内容" << endl;
 		char*ch = new char[300];
 		cin.get();
@@ -299,23 +302,31 @@ void Editor::del_line()
 	}
 	else
 	{
-		cur_line=slc->del_line(num);
+		cur_line = slc->del_line(num);
 		cout << "删除成功" << endl;
 		cout << cur_line->to_string() << endl;
 	}
 }
 
-bool Editor::is_valid_opt(char ch)
+bool Editor::is_valid_opt(char*ch)
 {
 	bool flag = false;
-	for (int i = 0; i < sizeof(opts); i++)
+	if (ch[1] != 0)
 	{
-		if (ch == opts[i])
-		{
-			flag = true;
-		}
+		return false;
+
 	}
-	return flag;
+	else
+	{
+		for (int i = 0; i < sizeof(opts); i++)
+		{
+			if (ch[0] == opts[i])
+			{
+				flag = true;
+			}
+		}
+		return flag;
+	}
 }
 
 

@@ -32,7 +32,7 @@ public:
 private:
 	char*in_file_name = new char[300];
 	char*out_file_name = new char[300];
-	bool is_valid_opt(char ch);
+	bool is_valid_opt(char*ch);
 	Str_Line_Chain*slc;//creat a Str_Line_Chain object.
 	Str_Line*cur_line;
 	char opts[15] = { 'R','I','D','F','C','Q','H','?','N','P','B','E','G','V','W'};
