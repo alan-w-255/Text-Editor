@@ -4,6 +4,7 @@ Str_Line_Chain::Str_Line_Chain()
 {
 	head = NULL;
 	tail = NULL;
+	file_name = NULL;
 }
 
 Str_Line_Chain::Str_Line_Chain(char * c)
@@ -48,18 +49,6 @@ void Str_Line_Chain::read_file_to_buffer()
 	}
 }
 
-void Str_Line_Chain::write_file()
-{
-	ofp.open(file_name,ios::ate);
-	ofp.clear();
-	Str_Line*tmp = head;
-	while (tmp != NULL)
-	{
-		ofp.write(tmp->to_string(),sizeof(tmp->to_string()));
-	}
-	ofp.close();
-}
-
 Str_Line * Str_Line_Chain::get_head_line()
 {
 	return head;
@@ -74,68 +63,53 @@ Str_Line * Str_Line_Chain::get_line(int num)
 {
 	if (num > tail->line_number)
 	{
-		cur_line = tail;
-		return cur_line;
+		return tail->pre_line;
 	}
 	else if (num < head->line_number)
 	{
-		cur_line = head;
-		return cur_line;
-	}
-	else if (num > cur_line->line_number)
-	{
-		while (num != cur_line->line_number)
-		{
-			cur_line = cur_line->next_line;
-		}
-		return cur_line;
-	}
-	else if (num < cur_line->line_number)
-	{
-		while (num != cur_line->line_number)
-		{
-			cur_line = cur_line->pre_line;
-		}
-		return cur_line;
+		return head;
 	}
 	else
 	{
-	return nullptr;
+		Str_Line*tmp = head;
+		while (num != tmp->line_number)
+		{
+			tmp= tmp->next_line;
+		}
+		return tmp;
 	}
 }
 
-Str_Line * Str_Line_Chain::get_cur_line()
-{
-	return cur_line;
-}
 
 Str_Line * Str_Line_Chain::get_next_line(Str_Line * cur)
 {
-	cur_line = cur->next_line;
-	return cur_line;
+	return cur->next_line;
 }
 
 Str_Line * Str_Line_Chain::get_pre_line(Str_Line * cur)
 {
-	cur_line = cur->pre_line;
-	return cur_line;
-}
-
-void Str_Line_Chain::set_cur(int num)
-{
-	cur_line = get_line(num);
-}
-
-void Str_Line_Chain::set_cur(Str_Line*sc)
-{
-	cur_line = sc;
+	return cur->pre_line;
 }
 
 Str_Line * Str_Line_Chain::del_line(int num)
 {
-	Str_Line*tmp = get_line(num);
-	del_line(tmp);
-	return get_line(num);
+	if (num >= tail->line_number)//如果输入行号大于尾节点得行号，删除尾节点前一行，返回尾节点前一行。因为尾节点为空节点。
+	{
+		del_line(tail->pre_line);
+		return tail->pre_line;
+	}
+	else if (num <= 0)
+	{
+		head = head->next_line;
+		del_line(head->pre_line);
+		return head;
+	}
+	else
+	{
+		Str_Line*tmp = get_line(num);
+		del_line(tmp);
+		return get_line(num);
+	}
 }
 
 Str_Line * Str_Line_Chain::del_line(Str_Line * line)
@@ -162,10 +136,19 @@ void Str_Line_Chain::insert_line(Str_Line * in_line, Str_Line*target)
 		tmp->line_number++;
 		tmp = tmp->next_line;
 	}
-	target->next_line->pre_line = in_line;
-	in_line->next_line = target;
-	target->next_line = in_line;
-	in_line->pre_line = target;
+	if (in_line->get_line_number() == 1)
+	{
+		in_line->next_line = target;
+		target->pre_line = in_line;
+		head = in_line;
+	}
+	else
+	{
+		target->pre_line->next_line = in_line;
+		in_line->pre_line = target->pre_line;
+		in_line->next_line = target;
+		target->pre_line = in_line;
+	}
 }
 
 void Str_Line_Chain::clear_chain()

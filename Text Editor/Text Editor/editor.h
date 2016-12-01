@@ -30,8 +30,10 @@ public:
 	void insert_line();
 	void del_line();
 private:
+	bool is_valid_opt(char ch);
 	Str_Line_Chain*slc;//creat a Str_Line_Chain object.
 	Str_Line*cur_line;
+	char opts[14] = { 'R','I','D','F','C','Q','H','?','N','P','B','E','G','V' };
 };
 
 

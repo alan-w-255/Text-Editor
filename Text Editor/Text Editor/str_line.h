@@ -12,6 +12,7 @@ public:
 	Str_Line(char* ss);
 	~Str_Line();
 	char*to_string();
+	int get_line_number();
 	friend class Str_Line_Chain;
 private:
 	int line_number;
