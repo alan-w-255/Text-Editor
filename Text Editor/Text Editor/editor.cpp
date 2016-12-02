@@ -25,6 +25,7 @@ void Editor::change_line()
 
 void Editor::save_file()
 {
+	slc->saved();
 	cout << "请输入保存得文件名" << endl;
 	cout << "请输入完整路径" << endl;
 	out_file_name = new char[300];
@@ -35,7 +36,7 @@ void Editor::save_file()
 	{
 		outfile.clear();
 		Str_Line*tmp = slc->get_head_line();
-		while (tmp != slc->get_tail_line() && tmp->to_string() != NULL)
+		while (tmp != slc->get_tail_line() && tmp->to_string() != NULL && tmp->to_string() != "")
 		{
 			outfile << tmp->to_string() << endl;
 			//追加行到文件
@@ -50,7 +51,7 @@ void Editor::save_file()
 	}
 }
 
-void Editor::go_begin()
+void Editor::begin()
 {
 	//已经打开其他文件
 	if (slc != NULL)
@@ -122,6 +123,12 @@ void Editor::go_begin()
 	}
 }
 
+void Editor::go_B()
+{
+	cur_line = slc->get_head_line();
+	cout << cur_line->to_string();
+}
+
 void Editor::go_end()
 {
 	Str_Line*tmp = slc->get_tail_line();
@@ -169,33 +176,56 @@ void Editor::show_cur_line()
 
 void Editor::quit_editor()
 {
-	//可以加些提示语句
-	slc->clear_chain();
-	delete slc;
+	if (slc->is_modified())
+	{
+		cout << "文件已经修改,是否保存修改？(y/n)" << endl;
+		char ch;
+		cin >> ch;
+		if (ch == 'y')
+		{
+			save_file();
+			delete slc;
+		}
+		else if (ch == 'n')
+		{
+			delete slc;
+		}
+		else
+		{
+			cout << "输入错误，请输入 y 或者 n" << endl;
+			quit_editor();
+		}
+	}
+	else
+	{
+			delete slc;
+	}
+	exit(1);
 }
 
 void Editor::run()
 {
-	char opt[20] = { 0 };
-	go_begin();
-	while (opt[0] !='Q')
+	char opt='H';
+	show_help();
+	char*get_input = new char[20];
+	begin();
+	while (opt !='Q')
 	{
 		cout << "请输入指令" << endl;
 		cin >> opt;
-		cin.clear();
-		opt[0]=toupper(opt[0]);
+		opt=toupper(opt);
 		if (is_valid_opt(opt))//判断是否是合法指令
 		{
-			switch (opt[0])
+			switch (opt)
 			{
-				case 'R':go_begin(); break;//打开文件，显示第一行
+				case 'R':begin(); break;//打开文件，显示第一行
 				case 'I':insert_line();//插入一行
 					 break;
 				case 'W':save_file();
 					break;
 				case 'D':del_line();//删除一行；
 					 break;
-			//	case 'F':insert_line();
+				case 'F':search_substr();
 					 break;
 				case 'C':change_line();
 					 break;
@@ -209,13 +239,15 @@ void Editor::run()
 					 break;
 				case 'P':read_pre_line();
 					 break;
-				case 'B':go_begin();
+				case 'B':go_B();
 					 break;
 				case 'E':go_end();
-break;
+					 break;
 				case 'G':go_line();
 					break;
-				case 'V':view_file(); break;
+				case 'V':view_file();
+					break;
+				case 'S':show_cur_line();
 				default:
 					break;
 			}
@@ -223,6 +255,7 @@ break;
 		else
 		{
 			cout << "输入指令不正确，请重新输入" << endl;
+			show_help();
 		}
 	}
 }
@@ -254,7 +287,6 @@ void Editor::insert_line()
 		cur_line = slc->get_head_line();
 		slc->get_head_line()->set_string(ch);
 		cout << "插入行成功" << endl;
-		cout << cur_line->to_string() << endl;
 	}
 	else if (num_line <= 1)
 	{
@@ -268,9 +300,8 @@ void Editor::insert_line()
 		slc->insert_line(ins_line, tmp);
 		cur_line = ins_line;
 		cout << "插入行成功" << endl;
-		cout << cur_line->to_string() << endl;
 	}
-	else
+	else if (num_line < slc->get_tail_line()->get_line_number())
 	{
 		cout << "你将在此行后插入： " << slc->get_line(num_line - 1)->to_string() << endl;
 		cout << "请输入你要插入的内容" << endl;
@@ -282,9 +313,19 @@ void Editor::insert_line()
 		slc->insert_line(ins_line, tmp);
 		cur_line = ins_line;
 		cout << "插入行成功" << endl;
-		cout << cur_line->to_string() << endl;
 	}
-
+	else if (num_line >= slc->get_tail_line()->get_line_number())
+	{
+		cout << "你将插入最后一行"<<endl;
+		cout << "请输入你要插入的内容" << endl;
+		char*ch = new char[300];
+		cin.get();
+		cin.get(ch, 300);
+		Str_Line*ins_line = new Str_Line(ch);
+		slc->insert_line(ins_line, slc->get_tail_line());
+		cur_line = ins_line;
+		cout << "插入行成功" << endl;
+	}
 }
 
 void Editor::del_line()
@@ -304,29 +345,46 @@ void Editor::del_line()
 	{
 		cur_line = slc->del_line(num);
 		cout << "删除成功" << endl;
-		cout << cur_line->to_string() << endl;
 	}
 }
 
-bool Editor::is_valid_opt(char*ch)
+void Editor::search_substr()
 {
-	bool flag = false;
-	if (ch[1] != 0)
+	cout << "请输入你要查找的字符" << endl;
+	char*ss = new char[300];
+	cin.get();
+	cin.getline(ss, 300);
+	Str_Line*tmp = slc->search_substr(ss, cur_line);
+	if (tmp == nullptr)
 	{
-		return false;
-
+		cout << "从头开始找" << endl;
+		tmp = slc->search_substr(ss, slc->get_head_line());
+		if (tmp == NULL)
+		{
+			cout << "未找到" << ss << endl;
+		}
+		else
+		{
+			cur_line = tmp;
+			cout << "找到该行:"<<endl<<cur_line->get_line_number() << ": "<<cur_line->to_string() << endl;
+		}
 	}
 	else
 	{
-		for (int i = 0; i < sizeof(opts); i++)
-		{
-			if (ch[0] == opts[i])
-			{
-				flag = true;
-			}
-		}
-		return flag;
+		cur_line = slc->search_substr(ss, slc->get_head_line());
+		cout << "找到该行:"<<cur_line->get_line_number() << ": "<<cur_line->to_string() << endl;
 	}
 }
 
-
+bool Editor::is_valid_opt(char ch)
+{
+	bool flag = false;
+	for (int i = 0; i < sizeof(opts); i++)
+	{
+		if (ch == opts[i])
+		{
+			flag = true;
+		}
+	}
+	return flag;
+}

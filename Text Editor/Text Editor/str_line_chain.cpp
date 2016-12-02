@@ -65,13 +65,16 @@ void Str_Line_Chain::read_file_to_buffer()
 		{
 			char*ch = new char[300];
 			ifp.getline(ch, 300);
-			Str_Line*tp = new Str_Line(ch);
-			tp->pre_line = tail->pre_line;
-			tp->next_line = tail;
-			tail->pre_line->next_line = tp;
-			tp->line_number = tail->line_number;
-			tail->pre_line = tp;
-			tail->line_number++;
+			if (ch != "")
+			{
+				Str_Line*tp = new Str_Line(ch);
+				tp->pre_line = tail->pre_line;
+				tp->next_line = tail;
+				tail->pre_line->next_line = tp;
+				tp->line_number = tail->line_number;
+				tail->pre_line = tp;
+				tail->line_number++;
+			}
 		}
 	}
 }
@@ -88,7 +91,7 @@ Str_Line * Str_Line_Chain::get_tail_line()
 
 Str_Line * Str_Line_Chain::get_line(int num)
 {
-	if (num > tail->line_number)
+	if (num >= tail->line_number)
 	{
 		return tail->pre_line;
 	}
@@ -155,7 +158,6 @@ Str_Line * Str_Line_Chain::del_line(int num)
 			tmp->line_number--;
 			tmp = tmp->next_line;
 		}
-		delete tmp;
 		return get_line(num);
 	}
 }
@@ -203,6 +205,26 @@ Str_Line * Str_Line_Chain::del_line(Str_Line*dline)
 	}
 }
 
+Str_Line * Str_Line_Chain::search_substr(char * substr,Str_Line*cur)
+{
+	char*ts = cur->s;
+	Str_Line*tmp = cur;
+	while (tmp != tail)
+	{
+		ts = tmp->s;
+		if (is_substr(substr, ts))
+		{
+			return tmp;
+		}
+		else
+		{
+			tmp = tmp->next_line;
+
+		}
+	}
+	return nullptr;
+}
+
 void Str_Line_Chain::insert_line(Str_Line * in_line, Str_Line*target)
 {
 	is_changed = true;
@@ -238,12 +260,34 @@ void Str_Line_Chain::clear_chain()
 	{
 		del_line(head->next_line);
 	}
-	delete head;
-	delete tail;
-
+	head->clear();
 }
 
 bool Str_Line_Chain::is_modified()
 {
 	return is_changed;
+}
+
+void Str_Line_Chain::saved()
+{
+	is_changed = false;
+}
+
+bool Str_Line_Chain::is_substr(char * sstr, char * tstr)
+{
+	for (int i = 0; i < strlen(tstr)-strlen(sstr)+1; i++)
+	{
+		for (int j = 0; j < strlen(sstr); j++)
+		{
+			if (sstr[j] != tstr[i+j])
+			{
+				break;
+			}
+			if (j == strlen(sstr) - 1)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }

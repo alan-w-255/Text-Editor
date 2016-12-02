@@ -13,11 +13,11 @@ class Editor
 {
 public:
     Editor();
-	Editor(char*filename);
     ~Editor();
 	void change_line();//改变当前行的内容
 	void save_file();
-	void go_begin();
+	void begin();
+	void go_B();
 	void go_end();
 	void go_line();
 	void view_file();
@@ -29,13 +29,14 @@ public:
     void read_pre_line();
 	void insert_line();
 	void del_line();
+	void search_substr();
 private:
 	char*in_file_name = new char[300];
 	char*out_file_name = new char[300];
-	bool is_valid_opt(char*ch);
+	bool is_valid_opt(char ch);
 	Str_Line_Chain*slc;//creat a Str_Line_Chain object.
 	Str_Line*cur_line;
-	char opts[15] = { 'R','I','D','F','C','Q','H','?','N','P','B','E','G','V','W'};
+	char opts[16] = { 'S','R','I','D','F','C','Q','H','?','N','P','B','E','G','V','W'};
 };
 
 

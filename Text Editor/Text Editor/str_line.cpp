@@ -7,11 +7,16 @@ Str_Line::Str_Line()
 
 Str_Line::~Str_Line()
 {
-	delete s;
+	if (s != NULL && line_number !=1) delete s;
+
 }
 char * Str_Line::to_string()
 {
 	return s;
+}
+void Str_Line::clear()
+{
+	if (s != NULL) delete s;
 }
 void Str_Line::set_string(char*ch)
 {
