@@ -1,0 +1,9 @@
+﻿  editor.cpp
+  main.cpp
+  str_line.cpp
+  str_line_chain.cpp
+  Generating code
+  All 196 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Text Editor.vcxproj -> I:\DSexercise\Text-Editor\Text Editor\x64\Release\Text Editor.exe
+  Text Editor.vcxproj -> I:\DSexercise\Text-Editor\Text Editor\x64\Release\Text Editor.pdb (Full PDB)

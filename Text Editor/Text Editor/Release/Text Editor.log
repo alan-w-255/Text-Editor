@@ -1,0 +1,11 @@
+﻿  editor.cpp
+  main.cpp
+  str_line.cpp
+  str_line_chain.cpp
+str_line_chain.cpp(278): warning C4018: '<': signed/unsigned mismatch
+str_line_chain.cpp(280): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  All 196 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Text Editor.vcxproj -> I:\DSexercise\Text-Editor\Text Editor\Release\Text Editor.exe
+  Text Editor.vcxproj -> I:\DSexercise\Text-Editor\Text Editor\Release\Text Editor.pdb (Full PDB)
