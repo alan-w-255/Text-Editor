@@ -166,7 +166,20 @@ void Editor::view_file()
 void Editor::show_help()
 {
 	cout << "help:" << endl;
-	cout << "输入 i 插入，输入 v 浏览整个文件,,,, " << endl;
+	cout << "输入 i 插入" << endl;
+	cout << "输入 v 浏览整个文件" << endl;
+	cout << "输入 w 保存文件" << endl;
+	cout << "输入 q 退出" << endl;
+	cout << "输入 n 浏览下一行" << endl;
+	cout << "输入 p 浏览前一行" << endl;
+	cout << "输入 s 显示当前行" << endl;
+	cout << "输入 f 查找" << endl;
+	cout << "输入 r 打开新文件" << endl;
+	cout << "输入 b 到文件开头" << endl;
+	cout << "输入 e 到文件末尾" << endl;
+	cout << "输入 c 修改当前行" << endl;
+	cout << "输入 d 删除行" << endl;
+	cout << "输入 g 到某一行" << endl;
 }
 
 void Editor::show_cur_line()
